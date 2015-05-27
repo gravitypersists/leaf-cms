@@ -1,0 +1,74 @@
+.header
+  position: absolute
+  top: 0px
+  width: 100%
+  height: 30px
+  border-bottom: 1px solid rgb(255, 249, 247)
+  background-color: white
+
+  .main-logo
+    position: absolute
+    top: 2px
+    height: 28px
+    width: 120px
+    left: 10px
+    background-image: url('./assets/logo.png')
+    background-size: 100%
+    background-repeat: no-repeat
+
+  .user-account
+    position: absolute
+    right: 10px
+    top: 0px
+
+    .sign-up
+      position: relative
+      width: 165px
+      display: inline-block
+      border: 1px solid
+      padding: 2px 0
+      padding-left: 34px
+      border-radius: 4px
+      color: white
+      cursor: pointer
+      margin-top: 2px
+
+      &:after
+        content: ""
+        position: absolute
+        left: 0px
+        top: 2px
+        height: 22px
+        width: 28px
+        background-repeat: no-repeat
+        background-position: center
+
+      &.with-facebook
+        background-color: #3C599B
+
+        &:after
+          border-right: 1px solid rgb(120, 132, 192)
+          background-image: url("./assets/facebook.png")
+          background-size: 9px
+
+      &.with-github
+        background-color: #444444
+
+        &:after
+          border-right: 1px solid #636464
+          background-image: url("./assets/github.png")
+          background-size: 28px
+
+    .logout
+      display: inline-block
+      font-size: 12px
+      position: relative
+      bottom: 5px
+      text-decoration: underline
+      color: rgb(179, 179, 179)
+      margin-right: 10px
+      cursor: pointer
+
+    .user-avatar
+      display: inline-block
+      width: 30px

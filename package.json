@@ -1,0 +1,29 @@
+{
+  "name": "site-leafbuilder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Michael Silveira <gravitypersists@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "babelify": "^6.1.2",
+    "browserify": "^10.2.1",
+    "gulp": "^3.8.11",
+    "gulp-concat": "^2.5.2",
+    "gulp-copy": "0.0.2",
+    "gulp-s3": "^0.3.0",
+    "gulp-sass": "^2.0.1",
+    "gulp-util": "^3.0.4",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.2.1"
+  },
+  "dependencies": {
+    "firebase": "^2.2.5",
+    "jquery": "^2.1.4",
+    "vex-js": "^2.3.2"
+  }
+}
