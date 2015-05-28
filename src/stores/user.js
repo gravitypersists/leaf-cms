@@ -28,7 +28,7 @@ function parseAuthData(authData) {
 }
 
 
-let UserStore = Reflux.createStore({
+let userStore = Reflux.createStore({
 
   listenables: actions,
 
@@ -55,10 +55,11 @@ let UserStore = Reflux.createStore({
 
         // User exists already
         // what if there are discrepancies between these?
-        actions.updateProfile(firebaseUser);
+        let firstValueOfObject = firebaseUser[Object.keys(firebaseUser)[0]];
+        actions.updateProfile(firstValueOfObject);
 
       } else {
-        
+
         // we must create the user
         let payload = {};
         payload[user.uid] = user
@@ -69,7 +70,7 @@ let UserStore = Reflux.createStore({
             actions.updateProfile(user)
           }
         });
-      
+
       };
 
     });
@@ -82,11 +83,9 @@ let UserStore = Reflux.createStore({
 
   updateProfile: function(user) {
     this.user = user;
-    console.log(user);
     this.trigger(this.user);
   },
 
 });
 
-
-module.exports = UserStore;
+module.exports = userStore;

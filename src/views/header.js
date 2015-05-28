@@ -1,6 +1,7 @@
 const $ = require('jquery');
 const Firebase = require('firebase');
 const actions = require('../actions');
+const userStore = require('../stores/user');
 
 let ref = new Firebase('https://leafbuilder-dev.firebaseio.com');
 
@@ -14,6 +15,7 @@ class Header {
     `);
     this.renderSelfLoggedOut();
     ref.onAuth(this.handleAuth.bind(this));
+    userStore.listen(this.renderSelfLoggedIn.bind(this))
   }
 
   renderSelfLoggedOut() {
@@ -25,17 +27,10 @@ class Header {
     this.$el.find('.with-facebook').on('click', this.authWithFacebook.bind(this));
   }
 
-  renderSelfLoggedIn() {
-    if (!this.authData) return;
-    let imgSrc = 'http://placekitten.com/61/62';
-    if (this.authData.provider === 'facebook') {
-      imgSrc = this.authData.facebook.cachedUserProfile.picture.data.url;
-    } else if (this.authData.provider === 'facebook')  {
-      imgSrc = this.authData.github.cachedUserProfile.avatar_url;
-    }
+  renderSelfLoggedIn(user) {
     this.$el.find('.user-account').html(`
       <div class='logout'>Logout</div>
-      <img class='user-avatar' src='${ imgSrc }'>
+      <img class='user-avatar' src='${ user.avatar_url }'>
     `);
     this.$el.find('.logout').on('click', this.handleLogoutClick.bind(this));
   }
@@ -56,8 +51,7 @@ class Header {
   handleLogin(authData) {
     this.authData = authData;
     actions.login(authData);
-    this.renderSelfLoggedIn();
-    $('.app-body').html('I <3 you, ' + this.authData[this.authData.provider].displayName);    
+    $('.app-body').html('I <3 you, ' + this.authData[this.authData.provider].displayName);
   }
 
   handleLogoutClick(e) {
