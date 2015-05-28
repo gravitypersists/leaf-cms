@@ -1,5 +1,6 @@
 const $ = require('jquery');
 const Firebase = require('firebase');
+const actions = require('../actions');
 
 let ref = new Firebase('https://leafbuilder-dev.firebaseio.com');
 
@@ -54,6 +55,7 @@ class Header {
 
   handleLogin(authData) {
     this.authData = authData;
+    actions.login(authData);
     this.renderSelfLoggedIn();
     $('.app-body').html('I <3 you, ' + this.authData[this.authData.provider].displayName);    
   }

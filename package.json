@@ -24,6 +24,7 @@
   "dependencies": {
     "firebase": "^2.2.5",
     "jquery": "^2.1.4",
+    "reflux": "^0.2.7",
     "vex-js": "^2.3.2"
   }
 }

@@ -1,6 +1,7 @@
 const $ = require('jquery');
-const Header = require('./views/header.js');
+const Header = require('./views/header');
 
+let UserStore = require('./stores/user');
 
 let $app = $('#app')
 $app.html(`
