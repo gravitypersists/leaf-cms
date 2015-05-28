@@ -1,0 +1,69 @@
+
+.leafbrowser
+  height: 100%
+  width: 170px
+  background-color: rgb(246, 252, 245)
+  border-right: 1px solid rgb(249, 241, 227)
+  overflow: auto
+
+  .bundle
+    position: relative
+    
+    &.expanded
+      .bundle-controls
+        display: inline-block
+      .bundle-label:before
+        content: "\f0d7" /* caret-down */
+
+    &.collapsed
+      .bundle-controls
+        display: none
+      .bundle-label:before
+        content: "\f0da" /* caret-right */
+
+  .bundle-controls
+    line-height: 14px
+
+    &:not(.top-controls)
+      position: absolute
+      right: 2px
+      top: 2px
+
+    & > div
+      display: inline-block
+      width: 16px
+      height: 14px
+      padding: 2px
+      margin: 0px 1px
+      background-color: rgb(255, 255, 255)
+      border-bottom: 1px solid rgb(219, 218, 218)
+      border-radius: 4px
+      font-size: 11px
+      color: rgb(144, 144, 144)
+      line-height: 27px
+      text-align: center
+      vertical-align: top
+      box-sizing: border-box
+      cursor: pointer
+
+  .top-controls
+    width: 100%
+    background-color: rgb(236, 236, 236)
+    padding: 2px
+    box-sizing: border-box
+    text-align: right
+
+  .new-bundle-prompt
+    outline: none
+    border-radius: 2px
+    border: 1px solid rgb(199, 199, 199)
+
+  .bundle-label
+    font-size: 14px
+    cursor: pointer
+
+    &:before
+      font-family: FontAwesome
+      margin-left: 6px
+      margin-right: 4px
+      color: rgb(171, 171, 171)

@@ -55,7 +55,6 @@ class Header {
   handleLogin(authData) {
     this.authData = authData;
     actions.login(authData);
-    $('.app-body').html('I <3 you, ' + this.authData[this.authData.provider].displayName);
   }
 
   handleLogoutClick(e) {

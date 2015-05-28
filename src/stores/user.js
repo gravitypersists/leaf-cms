@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const Reflux = require('reflux');
 const actions = require('../actions');
 const Firebase = require('firebase');
@@ -9,7 +10,8 @@ let defaultUser = {
   uid: '',
   name: '',
   email: '',
-  avatar_url: '' 
+  avatar_url: '',
+  bundles: {}
 };
 
 // Takes authdata as firebase gives it and returns a standard object
@@ -36,6 +38,8 @@ let userStore = Reflux.createStore({
     this.user = defaultUser;
   },
 
+  getUser: function() { return this.user; },
+
   // Philosophical thoughts here: this action handler, rather than updating
   // the data store, results in actions. Uni-directional events still occur
   // but the store now emits actions itself, like a view component might.
@@ -57,17 +61,20 @@ let userStore = Reflux.createStore({
         // what if there are discrepancies between these?
         let firstValueOfObject = firebaseUser[Object.keys(firebaseUser)[0]];
         actions.updateProfile(firstValueOfObject);
+        actions.completeLogin(firstValueOfObject);
 
       } else {
 
         // we must create the user
         let payload = {};
-        payload[user.uid] = user
+        _.defaults(user, defaultUser);
+        payload[user.uid] = user;
         usersRef.set(payload, (error) => {
           if (error) { 
             console.error(error);
           } else {
-            actions.updateProfile(user)
+            actions.updateProfile(user);
+            actions.completeLogin(user);
           }
         });
 

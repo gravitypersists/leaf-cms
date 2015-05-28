@@ -2,9 +2,11 @@ const Reflux = require('reflux')
 
 let actions = Reflux.createActions({ 
   'login': {},
+  'completeLogin': {},
   'logout': {},
   'createProfile': {},
-  'updateProfile': {}
+  'updateProfile': {},
+  'createBundle': {}
 });
 
 module.exports = actions;

@@ -25,6 +25,7 @@
     "firebase": "^2.2.5",
     "font-awesome": "^4.3.0",
     "jquery": "^2.1.4",
+    "lodash": "^3.9.3",
     "reflux": "^0.2.7",
     "vex-js": "^2.3.2"
   }
