@@ -19,7 +19,7 @@ gulp.task('sync', function(){
 });
 
 gulp.task('copy', function() {
-  gulp.src(['index.html', 'assets/**'])
+  gulp.src(['index.html', 'assets/**', './node_modules/font-awesome/**'])
     .pipe(copy('./build'));
 });
 
