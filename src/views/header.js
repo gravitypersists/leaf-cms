@@ -15,7 +15,11 @@ class Header {
     `);
     this.renderSelfLoggedOut();
     ref.onAuth(this.handleAuth.bind(this));
-    userStore.listen(this.renderSelfLoggedIn.bind(this))
+    userStore.listen(this.render.bind(this))
+  }
+
+  render(user) {
+    (user.email) ? this.renderSelfLoggedIn(user) : this.renderSelfLoggedOut();
   }
 
   renderSelfLoggedOut() {
@@ -59,7 +63,7 @@ class Header {
   }
 
   handleLogout() {
-    this.renderSelfLoggedOut();    
+    actions.logout();
   }
 
   authWithGithub() {
