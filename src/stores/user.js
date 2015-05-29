@@ -91,8 +91,7 @@ let userStore = Reflux.createStore({
   updateProfile: function(user) {
     this.user = user;
     this.trigger(this.user);
-  },
-
+  }
 });
 
 module.exports = userStore;

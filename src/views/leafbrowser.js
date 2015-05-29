@@ -66,7 +66,7 @@ class LeafBrowser {
           <div class='bundle-children'></div>
         </div>
       `);
-      let $children = $bundle.find('.bundle-children');
+      let $children = $bundle.children('.bundle-children');
       $bundle.find('.add-bundle').on('click', (e) => {
         this.promptForNewBundle($bundle, bundle.id);
       });
@@ -77,9 +77,22 @@ class LeafBrowser {
       $bundle.children('.bundle-label').on('click', (e) => {
         this.toggleBundle($bundle)
       });
-      let children = bundleStore.getBundlesByIds(bundle.bundles);
-      this.renderBundlesIntoEl(children, $children);
+      let childrenBundles = bundleStore.getBundlesByIds(bundle.bundles);
+      this.renderBundlesIntoEl(childrenBundles, $children);
+      // let childrenLeafs = leafStore.getLeafsByIds(bundle.leafs);
+      // SEE FUCK IT IN stores/bundles.js FOR MORE WTFs
+      let childrenLeafs = _.filter(_.values(bundle.leafs), (l) => !_.isBoolean(l));
+      this.renderLeafsIntoEl(childrenLeafs, $children);
     });
+  }
+
+  renderLeafsIntoEl(leafs, $el) {
+    _.each(leafs, (leaf) => {
+      let $leaf = $(`
+        <div class='leaf-label'>${ leaf.name }</div>
+      `);
+      $el.append($leaf);
+    })
   }
 
   toggleBundle($bundle) {

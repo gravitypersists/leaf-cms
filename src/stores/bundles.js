@@ -6,6 +6,7 @@ let userStore = require('./user');
 
 let ref = new Firebase('https://leafbuilder-dev.firebaseio.com');
 let bundlesRef = ref.child('bundles');
+let leafsRef = ref.child('leafs');
 // TODO create a fresh user for non-logged in accounts, after trying to auth them
 let userBundlesIndexRef = null; //ref.child('users/ ...unregistered user samples.. /bundles');
 
@@ -47,7 +48,26 @@ let bundleStore = Reflux.createStore({
           let bundleFromFirebase = bundle.val();
           bundleFromFirebase.id = bundle.key();
           bundles.push(bundleFromFirebase);
-          this.trigger(bundles);
+
+          // This is super ridiculous, trying to fully load a 
+          // model with relational data is absurd with firebase
+          _.each(bundleFromFirebase.leafs, (__, leafKey) => {
+            leafsRef.child(leafKey).once('value', (leafRef) => {
+              let newLeaf = leafRef.val();
+              newLeaf.id = leafKey;
+              // THIS HAPPENS AFTER
+              // actions.addLeaf(newLeaf);
+              // THIS DOES. NICE.
+              // this.trigger(bundles);
+              // SO FUCK IT.
+              bundleFromFirebase.leafs[leafKey] = newLeaf;
+
+              // Finally we trigger if all leafs are loaded
+              if (_.every(_.values(bundleFromFirebase.leafs), (l) => !_.isBoolean(l))) {
+                this.trigger(bundles);
+              }
+            });
+          });
         });
       });
     });
@@ -76,6 +96,11 @@ let bundleStore = Reflux.createStore({
   },
 
   // deleteBundle: funct ... needed???
+
+
+  addLeafToBundle: function(leaf, bundleId) {
+    bundlesRef.child(bundleId + '/leafs').child(leaf.id).set(true);
+  }
 
 });
 
