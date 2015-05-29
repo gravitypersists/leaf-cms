@@ -8,18 +8,24 @@
 
   .bundle
     position: relative
-    
+
     &.expanded
       .bundle-controls
         display: inline-block
       .bundle-label:before
         content: "\f0d7" /* caret-down */
+        margin-left: 4px
+        margin-right: 6px
 
     &.collapsed
       .bundle-controls
         display: none
       .bundle-label:before
         content: "\f0da" /* caret-right */
+        margin-left: 6px
+        margin-right: 4px
+      .bundle-children
+        max-height: 0px
 
   .bundle-controls
     line-height: 14px
@@ -53,17 +59,23 @@
     box-sizing: border-box
     text-align: right
 
+  .bundle-children:not(.top-bundle-children)
+    margin-left: 8px
+
   .new-bundle-prompt
     outline: none
+    width: 80px
     border-radius: 2px
     border: 1px solid rgb(199, 199, 199)
 
   .bundle-label
     font-size: 14px
     cursor: pointer
+    display: inline-block
+    padding-right: 10px
 
     &:before
       font-family: FontAwesome
-      margin-left: 6px
-      margin-right: 4px
       color: rgb(171, 171, 171)
+      display: inline-block
+      width: 7px

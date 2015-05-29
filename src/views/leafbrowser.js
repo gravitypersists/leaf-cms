@@ -16,17 +16,17 @@ class LeafBrowser {
     this.$el.html(`
       <div class='top-bundle bundle expanded'>
         <div class='top-controls bundle-controls'>
-          <div class='add-bundle'>
-            <i class="fa fa-caret-square-o-right"></i>
-          </div>
           <div class='add-leaf'>
             <i class="fa fa-plus"></i>
           </div>
+          <div class='add-bundle'>
+            <i class="fa fa-caret-square-o-right"></i>
+          </div>
         </div>
-        <div class='bundle-children'></div>
+        <div class='top-bundle-children bundle-children'></div>
       </div>
     `);
-    let $bundle = this.$el.find('.bundle');
+    let $bundle = this.$el.find('.top-bundle');
     this.$el.find('.add-bundle').on('click', (e) => {
       this.promptForNewBundle($bundle, null);
     });
@@ -36,12 +36,13 @@ class LeafBrowser {
 
     // I'll want to avoid rerendering this whole thing on each update
     bundleStore.listen((bundles) => {
-      let $childrenContainer = this.$el.children('.bundle').children('.bundle-children');
+      let $childrenContainer = this.$el.find('.top-bundle-children');
       $childrenContainer.empty();
-      // first filter bundles at the top node
 
+      // first filter bundles at the top node
+      let topBundles = _.filter(bundles, (b) => b.parent === undefined);
       // then recursively build the dom
-      this.renderBundlesIntoEl(bundles, $childrenContainer);
+      this.renderBundlesIntoEl(topBundles, $childrenContainer);
     });
   }
 
@@ -52,20 +53,26 @@ class LeafBrowser {
         <div class='bundle collapsed'>
           <div class='bundle-label'>${ bundle.name }</div>
           <div class='bundle-controls'>
-            <div class='add-bundle'>
-              <i class="fa fa-caret-square-o-right"></i>
-            </div>
             <div class='add-leaf'>
               <i class="fa fa-plus"></i>
+            </div>
+            <div class='add-bundle'>
+              <i class="fa fa-caret-square-o-right"></i>
             </div>
           </div>
           <div class='bundle-children'></div>
         </div>
       `);
-      let $child = $bundle.find('.bundle-children');
+      let $children = $bundle.find('.bundle-children');
+      $bundle.find('.add-bundle').on('click', (e) => {
+        this.promptForNewBundle($bundle, bundle.id);
+      });
       $el.append($bundle);
-      $bundle.on('click', (e) => this.toggleBundle($bundle));
-      this.renderBundlesIntoEl(bundle.bundles, $child);
+      $bundle.children('.bundle-label').on('click', (e) => {
+        this.toggleBundle($bundle)
+      });
+      let children = bundleStore.getBundlesByIds(bundle.bundles);
+      this.renderBundlesIntoEl(children, $children);
     });
   }
 
@@ -80,7 +87,7 @@ class LeafBrowser {
       </div>
     `);
     let $input = $dom.find('input');
-    $parentBundle.children('.bundle-children').before($dom);
+    $parentBundle.children('.bundle-children').prepend($dom);
     $input.focus();
     $input.on('keydown', (e) => {
       if (e.which === 13) {

@@ -25,8 +25,11 @@ let bundleStore = Reflux.createStore({
 
   },
 
-  getAll: function() {
-    return bundles;
+  getAll: function() { return bundles; },
+
+  getBundleById: function(id) { return _.find(bundles, (b) => b.id === id); },
+  getBundlesByIds: function(ids) { 
+    return _.map(ids, (__, key) => this.getBundleById(key));
   },
 
   completeLogin: function(user) {
@@ -36,12 +39,17 @@ let bundleStore = Reflux.createStore({
 
     // bind to user's registered bundles
     userBundlesIndexRef = ref.child('users/' + user.uid + '/bundles');
-    userBundlesIndexRef.on('child_added', (userBundle) => {
-      let id = userBundle.key();
-      bundlesRef.child(id).once('value', (bundle) => {
-        bundles.push(bundle.val());
-        this.trigger(bundles);
-      });
+    userBundlesIndexRef.on('value', (userBundles) => {
+      let ids = _.keys(userBundles.val());
+      _.each(ids, (id) => {
+        // Can I just query for all of these at once?
+        bundlesRef.child(id).once('value', (bundle) => {
+          let bundleFromFirebase = bundle.val();
+          bundleFromFirebase.id = bundle.key();
+          bundles.push(bundleFromFirebase);
+          this.trigger(bundles);
+        });
+      })
     });
   },
 
@@ -50,7 +58,14 @@ let bundleStore = Reflux.createStore({
   createBundle: function(bundle = {}, parentBundleId) {
     _.defaults(bundle, defaultBundle);
     bundle.owner = userStore.getUser().uid;
+    if (parentBundleId) bundle.parent = parentBundleId;
     let newBundleRef = bundlesRef.push(bundle);
+    // Now we've created it, we need to ensure it's referenced in
+    // whatever models own it, users and other bundles (for nesting)
+    if (parentBundleId) {
+      bundlesRef.child(parentBundleId + '/bundles')
+                .child(newBundleRef.key()).set(true);
+    }
     // this index should be registered... if not I want it to fail to know why.
     userBundlesIndexRef.child(newBundleRef.key()).set(true);
   },
