@@ -90,11 +90,14 @@ class LeafBrowser {
     $parentBundle.children('.bundle-children').prepend($dom);
     $input.focus();
     $input.on('keydown', (e) => {
-      if (e.which === 13) {
+      if (e.which === 13) { // enter
         $dom.remove();
         actions.createBundle({ name: $input.val() }, parentBundleId);
+      } else if (e.which === 27) { // esc
+        $dom.remove();
       }
     });
+    $input.on('blur', (e) => $dom.remove());
   }
 
 }
