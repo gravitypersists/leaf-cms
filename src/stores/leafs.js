@@ -15,9 +15,9 @@ let leafStore = Reflux.createStore({
 
   },
 
-  getAll: function() {
-    return leafs;
-  }
+  getAll: function() { return leafs; },
+
+  createLeaf: function(leaf, parentBundleId) {}
 
 });
 

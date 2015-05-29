@@ -6,7 +6,8 @@ let actions = Reflux.createActions({
   'logout': {},
   'createProfile': {},
   'updateProfile': {},
-  'createBundle': {}
+  'createBundle': {},
+  'createLeaf': {}
 });
 
 module.exports = actions;

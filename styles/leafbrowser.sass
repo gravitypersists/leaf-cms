@@ -6,6 +6,7 @@
   background-color: rgb(246, 252, 245)
   border-right: 1px solid rgb(249, 241, 227)
   overflow: auto
+  +vendor-prefix(user-select, none)
 
   .bundle
     position: relative
@@ -85,13 +86,13 @@
     box-sizing: border-box
     text-align: right
 
-  .new-bundle-prompt
+  .new-bundle-prompt, .new-leaf-prompt
     outline: none
     width: 80px
     border-radius: 2px
     border: 1px solid rgb(199, 199, 199)
 
-  .bundle-label
+  .bundle-label, .leaf-label
     font-size: 14px
     cursor: pointer
     display: inline-block
@@ -102,3 +103,10 @@
       color: rgb(171, 171, 171)
       display: inline-block
       width: 7px
+
+  .leaf-label.prompt
+    &:before
+      font-size: 10px
+      margin-left: 5px
+      margin-right: 5px
+      content: "\f06c" /* leaf */

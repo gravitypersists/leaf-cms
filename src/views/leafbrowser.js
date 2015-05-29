@@ -30,6 +30,9 @@ class LeafBrowser {
     this.$el.find('.add-bundle').on('click', (e) => {
       this.promptForNewBundle($bundle, null);
     });
+    this.$el.find('.add-leaf').on('click', (e) => {
+      this.promptForNewLeaf($bundle, null);
+    });
 
     // we need to recursively build for each bundle 
     // and each bundle's children bundles
@@ -67,6 +70,9 @@ class LeafBrowser {
       $bundle.find('.add-bundle').on('click', (e) => {
         this.promptForNewBundle($bundle, bundle.id);
       });
+      $bundle.find('.add-leaf').on('click', (e) => {
+        this.promptForNewLeaf($bundle, bundle.id);
+      });
       $el.append($bundle);
       $bundle.children('.bundle-label').on('click', (e) => {
         this.toggleBundle($bundle)
@@ -81,18 +87,31 @@ class LeafBrowser {
   }
 
   promptForNewBundle($parentBundle, parentBundleId) {
+    this.promptUser($parentBundle, 'bundle', (name) => {
+      actions.createBundle({ name }, parentBundleId);
+    });
+  }
+
+  promptForNewLeaf($parentBundle, parentBundleId) {
+    this.promptUser($parentBundle, 'leaf', (name) => {
+      actions.createLeaf({ name }, parentBundleId);
+    });
+  }
+
+  promptUser($parent, type, callback) {
     let $dom = $(`
-      <div class='bundle-label'>
-        <input type='text' class='new-bundle-prompt'>
+      <div class='${ type }-label prompt'>
+        <input type='text' class='new-${ type }-prompt'>
       </div>
     `);
     let $input = $dom.find('input');
-    $parentBundle.children('.bundle-children').prepend($dom);
+    $parent.children('.bundle-children').prepend($dom);
     $input.focus();
     $input.on('keydown', (e) => {
       if (e.which === 13) { // enter
         $dom.remove();
-        actions.createBundle({ name: $input.val() }, parentBundleId);
+        callback($input.val())
+        
       } else if (e.which === 27) { // esc
         $dom.remove();
       }
