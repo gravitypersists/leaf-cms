@@ -1,3 +1,4 @@
+@import mixins
 
 .leafbrowser
   height: 100%
@@ -16,6 +17,9 @@
         content: "\f0d7" /* caret-down */
         margin-left: 4px
         margin-right: 6px
+      .bundle-children
+        max-height: 1500px
+        +vendor-prefix(transition, all 500ms cubic-bezier(0.960, 0.000, 0.885, 0.590))
 
     &.collapsed
       .bundle-controls
@@ -26,6 +30,13 @@
         margin-right: 4px
       .bundle-children
         max-height: 0px
+        +vendor-prefix(transition, all 200ms cubic-bezier(0.000, 0.980, 0.000, 1.000))
+
+  .bundle-children
+    overflow: hidden
+
+  .bundle-children:not(.top-bundle-children)
+    margin-left: 8px
 
   .bundle-controls
     line-height: 14px
@@ -58,9 +69,6 @@
     padding: 2px
     box-sizing: border-box
     text-align: right
-
-  .bundle-children:not(.top-bundle-children)
-    margin-left: 8px
 
   .new-bundle-prompt
     outline: none
