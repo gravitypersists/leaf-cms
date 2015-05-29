@@ -39,7 +39,7 @@ let bundleStore = Reflux.createStore({
 
     // bind to user's registered bundles
     userBundlesIndexRef = ref.child('users/' + user.uid + '/bundles');
-    userBundlesIndexRef.on('value', (userBundles) => {
+    userBundlesIndexRef.once('value', (userBundles) => {
       let ids = _.keys(userBundles.val());
       _.each(ids, (id) => {
         // Can I just query for all of these at once?
@@ -49,7 +49,7 @@ let bundleStore = Reflux.createStore({
           bundles.push(bundleFromFirebase);
           this.trigger(bundles);
         });
-      })
+      });
     });
   },
 
@@ -59,15 +59,20 @@ let bundleStore = Reflux.createStore({
     _.defaults(bundle, defaultBundle);
     bundle.owner = userStore.getUser().uid;
     if (parentBundleId) bundle.parent = parentBundleId;
-    let newBundleRef = bundlesRef.push(bundle);
+    let newKey = bundlesRef.push(bundle).key();
     // Now we've created it, we need to ensure it's referenced in
     // whatever models own it, users and other bundles (for nesting)
     if (parentBundleId) {
       bundlesRef.child(parentBundleId + '/bundles')
-                .child(newBundleRef.key()).set(true);
+                .child(newKey).set(true);
     }
     // this index should be registered... if not I want it to fail to know why.
-    userBundlesIndexRef.child(newBundleRef.key()).set(true);
+    userBundlesIndexRef.child(newKey).set(true);
+
+    // Finally, update the actual data store. Jesus wtf firebase...
+    bundle.id = newKey;
+    bundles.push(bundle);
+    this.trigger(bundles);
   },
 
   // deleteBundle: funct ... needed???
