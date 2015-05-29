@@ -31,12 +31,27 @@
       .bundle-children
         max-height: 0px
         +vendor-prefix(transition, all 200ms cubic-bezier(0.000, 0.980, 0.000, 1.000))
+        &:empty:after
+          content: none
 
   .bundle-children
     overflow: hidden
+    position: relative
 
-  .bundle-children:not(.top-bundle-children)
-    margin-left: 8px
+    &:empty
+      height: 15px
+
+      &:after
+        content: "empty"
+        position: absolute
+        top: -1px
+        left: 14px
+        font-size: 10px
+        color: rgb(181, 181, 181)
+
+
+    &:not(.top-bundle-children)
+      margin-left: 8px
 
   .bundle-controls
     line-height: 14px
