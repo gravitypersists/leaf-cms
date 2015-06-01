@@ -55,11 +55,14 @@ let bundleStore = Reflux.createStore({
             leafsRef.child(leafKey).once('value', (leafRef) => {
               let newLeaf = leafRef.val();
               newLeaf.id = leafKey;
-              // THIS HAPPENS AFTER
-              // actions.addLeaf(newLeaf);
-              // THIS DOES. NICE.
-              // this.trigger(bundles);
-              // SO FUCK IT.
+
+              // I need to rethink how stores work. I'm not super
+              // happy with reflux, as it seems a bit naive with
+              // it's lack of data updating. I'd like to consider
+              // scrapping and building a solution from scratch
+              // using bacon.js but in the interest of Getting Shit
+              // Done™ I will just move towards making "bundles"
+              // a complete app-state of current files.
               bundleFromFirebase.leafs[leafKey] = newLeaf;
 
               // Finally we trigger if all leafs are loaded

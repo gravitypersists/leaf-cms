@@ -2,7 +2,6 @@ const $ = require('jquery');
 const _ = require('lodash');
 const Firebase = require('firebase');
 const actions = require('../actions');
-const leafStore = require('../stores/leafs');
 const bundleStore = require('../stores/bundles');
 
 class LeafBrowser {
@@ -79,8 +78,7 @@ class LeafBrowser {
       });
       let childrenBundles = bundleStore.getBundlesByIds(bundle.bundles);
       this.renderBundlesIntoEl(childrenBundles, $children);
-      // let childrenLeafs = leafStore.getLeafsByIds(bundle.leafs);
-      // SEE FUCK IT IN stores/bundles.js FOR MORE WTFs
+      // bundle is a fully complete store of bundles and leafs, for now
       let childrenLeafs = _.filter(_.values(bundle.leafs), (l) => !_.isBoolean(l));
       this.renderLeafsIntoEl(childrenLeafs, $children);
     });
