@@ -3,6 +3,7 @@ const _ = require('lodash');
 const Firebase = require('firebase');
 const actions = require('../actions');
 const bundleStore = require('../stores/bundles');
+const currentLeafStore = require('../stores/current-leaf');
 
 class LeafBrowser {
 
@@ -44,6 +45,8 @@ class LeafBrowser {
       this.renderBundlesIntoEl(bundleTree.loadedBundles, $childrenContainer);
       this.renderLeafsIntoEl(bundleTree.loadedLeafs, $childrenContainer);
     });
+
+    currentLeafStore.listen((leaf) => this.setCurrentLeaf(leaf));
   }
 
   // recursive function
@@ -99,7 +102,9 @@ class LeafBrowser {
     $el.children('.leaf-label').remove();
     _.each(_.sortBy(leafs, 'name'), (leaf) => {
       let $leaf = $(`
-        <div class='leaf-label'>${ leaf.name }</div>
+        <div class='leaf-label' data-leaf-id='${ leaf.id }'>
+          ${ leaf.name }
+        </div>
       `);
       $el.append($leaf);
       $leaf.on('click', (e) => actions.gotoLeaf(leaf));
@@ -141,6 +146,11 @@ class LeafBrowser {
       }
     });
     $input.on('blur', (e) => $dom.remove());
+  }
+
+  setCurrentLeaf(leaf) {
+    this.$el.find('.selected').removeClass('selected');
+    this.$el.find(`[data-leaf-id='${leaf.id}']`).addClass('selected');
   }
 
 }

@@ -39,8 +39,8 @@
           content: none
 
   .bundle-children
-    overflow: hidden
     position: relative
+    overflow: hidden
 
     &:empty
       height: 15px
@@ -122,10 +122,22 @@
     color: #1E657B
 
   .leaf-label
+    position: relative
     display: block
     margin-left: 6px
     font-weight: 400
     color: #646464
+    z-index: 0
+
+    &.selected:after
+      content: ""
+      position: absolute
+      top: 2px
+      width: 1000px
+      height: 16px
+      background-color: rgb(185, 234, 193)
+      left: -500px
+      z-index: -1
 
   .leaf-label.prompt
     &:before
