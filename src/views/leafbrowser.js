@@ -102,7 +102,9 @@ class LeafBrowser {
         <div class='leaf-label'>${ leaf.name }</div>
       `);
       $el.append($leaf);
-    })
+      $leaf.on('click', (e) => actions.gotoLeaf(leaf));
+    });
+
   }
 
   toggleBundle($bundle) {

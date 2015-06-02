@@ -22,6 +22,7 @@ let actions = Reflux.createActions({
   'addBundleToBundle': {},
   'addBundleToUser': {},
   'addLeaf': {},
+  'gotoLeaf': {}
 });
 
 
