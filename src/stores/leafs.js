@@ -1,3 +1,5 @@
+// THIS FILE IS NOT BEING USED. I'M JUST KEEPING IT AROUND FOR A BIT.
+
 const _ = require('lodash');
 const Reflux = require('reflux');
 const actions = require('../actions');
@@ -42,4 +44,4 @@ let leafStore = Reflux.createStore({
 
 });
 
-module.exports = leafStore;
+module.exports = leafStoreNOTUSED;

@@ -2,107 +2,61 @@ const _ = require('lodash');
 const Reflux = require('reflux');
 const actions = require('../actions');
 const Firebase = require('firebase');
-let userStore = require('./user');
 
-let ref = new Firebase('https://leafbuilder-dev.firebaseio.com');
-let bundlesRef = ref.child('bundles');
-let leafsRef = ref.child('leafs');
-// TODO create a fresh user for non-logged in accounts, after trying to auth them
-let userBundlesIndexRef = null; //ref.child('users/ ...unregistered user samples.. /bundles');
-
-let currentUser = [];
-let bundles = [];
-
-let defaultBundle = {
-  name: 'Loose leafs',
-  type: 'Public'
-};
+let bundles = {};
 
 let bundleStore = Reflux.createStore({
 
   listenables: actions,
 
-  init: function() {
+  init: function() {},
 
+  getBundleTree: function() { return bundles.loadedBundles; },
+
+  // searches bundle tree recursively to find our bundle
+  getBundleById: function(id) {
+    let recurse = function(bunds) {
+      let loaded = bunds.loadedBundles || [];
+      for (let i = 0; i < loaded.length; i++) {
+        let bundle = loaded[i];
+        if (bundle.id === id) return bundle;
+        let keepGoing = recurse(bundle);
+        if (keepGoing) return keepGoing;
+      }
+    }
+    return recurse(bundles);
   },
 
-  getAll: function() { return bundles; },
-
-  getBundleById: function(id) { return _.find(bundles, (b) => b.id === id); },
   getBundlesByIds: function(ids) { 
-    return _.map(ids, (__, key) => this.getBundleById(key));
+    return _.compact(_.map(ids, (__, key) => this.getBundleById(key)));
   },
 
   completeLogin: function(user) {
-    // reset data
-    bundles = [];
-    // need to unbind old listeners or perhaps recreate data store?
-
-    // bind to user's registered bundles
-    userBundlesIndexRef = ref.child('users/' + user.uid + '/bundles');
-    userBundlesIndexRef.once('value', (userBundles) => {
-      let ids = _.keys(userBundles.val());
-      _.each(ids, (id) => {
-        // Can I just query for all of these at once?
-        bundlesRef.child(id).once('value', (bundle) => {
-          let bundleFromFirebase = bundle.val();
-          bundleFromFirebase.id = bundle.key();
-          bundles.push(bundleFromFirebase);
-
-          // This is super ridiculous, trying to fully load a 
-          // model with relational data is absurd with firebase
-          _.each(bundleFromFirebase.leafs, (__, leafKey) => {
-            leafsRef.child(leafKey).once('value', (leafRef) => {
-              let newLeaf = leafRef.val();
-              newLeaf.id = leafKey;
-
-              // I need to rethink how stores work. I'm not super
-              // happy with reflux, as it seems a bit naive with
-              // it's lack of data updating. I'd like to consider
-              // scrapping and building a solution from scratch
-              // using bacon.js but in the interest of Getting Shit
-              // Done™ I will just move towards making "bundles"
-              // a complete app-state of current files.
-              bundleFromFirebase.leafs[leafKey] = newLeaf;
-
-              // Finally we trigger if all leafs are loaded
-              if (_.every(_.values(bundleFromFirebase.leafs), (l) => !_.isBoolean(l))) {
-                this.trigger(bundles);
-              }
-            });
-          });
-        });
-      });
-    });
-  },
-
-  // TODO: consider using firebase transactions for atomic operations
-  // https://www.firebase.com/docs/web/api/firebase/transaction.html
-  createBundle: function(bundle = {}, parentBundleId) {
-    _.defaults(bundle, defaultBundle);
-    bundle.owner = userStore.getUser().uid;
-    if (parentBundleId) bundle.parent = parentBundleId;
-    let newKey = bundlesRef.push(bundle).key();
-    // Now we've created it, we need to ensure it's referenced in
-    // whatever models own it, users and other bundles (for nesting)
-    if (parentBundleId) {
-      bundlesRef.child(parentBundleId + '/bundles')
-                .child(newKey).set(true);
-    }
-    // this index should be registered... if not I want it to fail to know why.
-    userBundlesIndexRef.child(newKey).set(true);
-
-    // Finally, update the actual data store. Jesus wtf firebase...
-    bundle.id = newKey;
-    bundles.push(bundle);
-    this.trigger(bundles);
+    bundles = {}; // reset data
   },
 
   // deleteBundle: funct ... needed???
 
+  addBundleToBundle: function(childBundle, parentBundleId) {
+    let parentBundle = this.getBundleById(parentBundleId);
+    // It doesn't exist in the tree yet, assume it's the workspace
+    if (!parentBundle) {
+      bundles = { id: parentBundleId };
+      parentBundle = bundles;
+    }
+    parentBundle.loadedBundles = parentBundle.loadedBundles || [];
+    parentBundle.loadedBundles.push(childBundle);
+    this.trigger(bundles.loadedBundles);
+  },
 
   addLeafToBundle: function(leaf, bundleId) {
-    bundlesRef.child(bundleId + '/leafs').child(leaf.id).set(true);
+    let childBundle = this.getBundleById(bundleId);
+    let existingLeaf = _.find(childBundle.leafs, (l) => l.id === leaf.id);
+    if (existingLeaf) {
+      existingLeaf = leaf;
+    } else {
+      childBundle.leafs.push(leaf);
+    }
   }
 
 });

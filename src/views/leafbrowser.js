@@ -27,10 +27,10 @@ class LeafBrowser {
     `);
     let $bundle = this.$el.find('.top-bundle');
     this.$el.find('.add-bundle').on('click', (e) => {
-      this.promptForNewBundle($bundle, null);
+      this.promptForNewBundle($bundle, 'top');
     });
     this.$el.find('.add-leaf').on('click', (e) => {
-      this.promptForNewLeaf($bundle, null);
+      this.promptForNewLeaf($bundle, 'top');
     });
 
     // we need to recursively build for each bundle 
@@ -39,44 +39,56 @@ class LeafBrowser {
     // I'll want to avoid rerendering this whole thing on each update
     bundleStore.listen((bundles) => {
       let $childrenContainer = this.$el.find('.top-bundle-children');
-      $childrenContainer.empty();
 
-      // first filter bundles at the top node
-      let topBundles = _.filter(bundles, (b) => b.parent === undefined);
       // then recursively build the dom
-      this.renderBundlesIntoEl(topBundles, $childrenContainer);
+      this.renderBundlesIntoEl(bundles, $childrenContainer);
     });
   }
 
   // recursive function
   renderBundlesIntoEl(bundles, $el) {
     _.each(bundles, (bundle) => {
-      let $bundle = $(`
-        <div class='bundle collapsed'>
-          <div class='bundle-label'>${ bundle.name }</div>
-          <div class='bundle-controls'>
-            <div class='add-leaf'>
-              <i class="fa fa-plus"></i>
+      // Since I decided against virtual dom, I need to check for
+      // existing els or decide to create a new one. Rather than
+      // aim for immutability, I'm thinking about how to categorize
+      // mutations, and this "create or update on render" is just
+      // an experiment for the time being.
+      let $bundle = $el.children(`[data-bundle-id='${bundle.id}']`);
+
+      if ($bundle.length === 0) {
+
+        $bundle = $(`
+          <div class='bundle collapsed' data-bundle-id='${ bundle.id }'>
+            <div class='bundle-label'>${ bundle.name }</div>
+            <div class='bundle-controls'>
+              <div class='add-leaf'>
+                <i class="fa fa-plus"></i>
+              </div>
+              <div class='add-bundle'>
+                <i class="fa fa-caret-square-o-right"></i>
+              </div>
             </div>
-            <div class='add-bundle'>
-              <i class="fa fa-caret-square-o-right"></i>
-            </div>
+            <div class='bundle-children'></div>
           </div>
-          <div class='bundle-children'></div>
-        </div>
-      `);
+        `);
+        $bundle.find('.add-bundle').on('click', (e) => {
+          this.promptForNewBundle($bundle, bundle.id);
+        });
+        $bundle.find('.add-leaf').on('click', (e) => {
+          this.promptForNewLeaf($bundle, bundle.id);
+        });
+        $el.append($bundle);
+        $bundle.children('.bundle-label').on('click', (e) => {
+          this.toggleBundle($bundle)
+        });
+        
+      } else {
+        // This is the ugly part, manually handle bundle title updates
+        // and whatever mutations that can occur
+      }
+
+      let childrenBundles = bundle.loadedBundles;
       let $children = $bundle.children('.bundle-children');
-      $bundle.find('.add-bundle').on('click', (e) => {
-        this.promptForNewBundle($bundle, bundle.id);
-      });
-      $bundle.find('.add-leaf').on('click', (e) => {
-        this.promptForNewLeaf($bundle, bundle.id);
-      });
-      $el.append($bundle);
-      $bundle.children('.bundle-label').on('click', (e) => {
-        this.toggleBundle($bundle)
-      });
-      let childrenBundles = bundleStore.getBundlesByIds(bundle.bundles);
       this.renderBundlesIntoEl(childrenBundles, $children);
       // bundle is a fully complete store of bundles and leafs, for now
       let childrenLeafs = _.filter(_.values(bundle.leafs), (l) => !_.isBoolean(l));
@@ -85,6 +97,8 @@ class LeafBrowser {
   }
 
   renderLeafsIntoEl(leafs, $el) {
+    // First clear out old ones (because we're not rerendering)
+    $el.find('.leaf-label').remove();
     _.each(leafs, (leaf) => {
       let $leaf = $(`
         <div class='leaf-label'>${ leaf.name }</div>
@@ -122,7 +136,6 @@ class LeafBrowser {
       if (e.which === 13) { // enter
         $dom.remove();
         callback($input.val())
-        
       } else if (e.which === 27) { // esc
         $dom.remove();
       }
