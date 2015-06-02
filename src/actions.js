@@ -95,8 +95,8 @@ actions.completeLogin.preEmit = function(user) {
   currentUser = user;
 
   // bind to user's workspace
-  let userWorkspaceRef = bundlesRef.child(user.workspace + '/bundles');
-  userWorkspaceRef.on('child_added', (userBundle) => {
+  let userWorkspaceBundlesRef = bundlesRef.child(user.workspace + '/bundles');
+  userWorkspaceBundlesRef.on('child_added', (userBundle) => {
 
     // For each top level bundle in the workspace
     let id = userBundle.key();
@@ -113,6 +113,19 @@ actions.completeLogin.preEmit = function(user) {
 
     });
   });
+
+  // Similar action for leafs. Might be worth considering
+  // abstracting this.
+  let userWorkspaceLeafsRef = bundlesRef.child(user.workspace + '/leafs');
+  userWorkspaceLeafsRef.on('child_added', (userLeaf) => {
+    let id = userLeaf.key();
+    leafsRef.child(id).on('value', (leafSnap) => {
+      let leaf = leafSnap.val();
+      leaf.id = leafSnap.key();
+      actions.addLeafToBundle(leaf, user.workspace);
+    });
+  });
+
 }
 
 actions.createBundle.preEmit = function(bundle = {}, parentId) {
@@ -157,6 +170,19 @@ actions.addBundleToBundle.preEmit = function(childBundle, parentBundleId) {
     });
   });
 
+}
+
+actions.createLeaf.preEmit = function(leaf = {}, parentId) {
+  let defaultLeaf = {
+    name: '',
+  };
+  _.defaults(leaf, defaultLeaf);
+  leaf.owner = currentUser.uid;
+  leaf.parent = (parentId === 'top') ? currentUser.workspace : parentId;
+  // Add it to firebase
+  leaf.id = leafsRef.push(leaf).key();
+  // And give it to parent bundle
+  bundlesRef.child(leaf.parent + '/leafs/' + leaf.id).set(true);
 }
 
 

@@ -11,10 +11,11 @@ let bundleStore = Reflux.createStore({
 
   init: function() {},
 
-  getBundleTree: function() { return bundles.loadedBundles; },
+  getBundleTree: function() { return bundles; },
 
   // searches bundle tree recursively to find our bundle
-  getBundleById: function(id) {
+  getBundleById: function(id = null) {
+    if (bundles.id === id) return bundles;
     let recurse = function(bunds) {
       let loaded = bunds.loadedBundles || [];
       for (let i = 0; i < loaded.length; i++) {
@@ -37,26 +38,38 @@ let bundleStore = Reflux.createStore({
 
   // deleteBundle: funct ... needed???
 
-  addBundleToBundle: function(childBundle, parentBundleId) {
-    let parentBundle = this.getBundleById(parentBundleId);
-    // It doesn't exist in the tree yet, assume it's the workspace
+  // getBundleById with safety to create top level bundle if it
+  // doesn't exist yet, assuming it's the workspace
+  ensureBundleById: function(id) {
+    let parentBundle = this.getBundleById(id);
     if (!parentBundle) {
-      bundles = { id: parentBundleId };
+      bundles = { id };
       parentBundle = bundles;
     }
-    parentBundle.loadedBundles = parentBundle.loadedBundles || [];
-    parentBundle.loadedBundles.push(childBundle);
-    this.trigger(bundles.loadedBundles);
+    return parentBundle;
   },
 
-  addLeafToBundle: function(leaf, bundleId) {
-    let childBundle = this.getBundleById(bundleId);
-    let existingLeaf = _.find(childBundle.leafs, (l) => l.id === leaf.id);
-    if (existingLeaf) {
-      existingLeaf = leaf;
+  setOrPush: function(col, child) {
+    let finding = _.findIndex(col, (c) => c.id === child.id);
+    if (finding > -1) {
+      col[finding] = child; // replace it
     } else {
-      childBundle.leafs.push(leaf);
+      col.push(child); // add it
     }
+  },
+
+  addBundleToBundle: function(childBundle, parentBundleId) {
+    let parentBundle = this.ensureBundleById(parentBundleId);
+    parentBundle.loadedBundles = parentBundle.loadedBundles || [];
+    this.setOrPush(parentBundle.loadedBundles, childBundle);
+    this.trigger(bundles);
+  },
+
+  addLeafToBundle: function(leaf, parentBundleId) {
+    let parentBundle = this.ensureBundleById(parentBundleId);
+    parentBundle.loadedLeafs = parentBundle.loadedLeafs || [];
+    this.setOrPush(parentBundle.loadedLeafs, leaf);
+    this.trigger(bundles);
   }
 
 });

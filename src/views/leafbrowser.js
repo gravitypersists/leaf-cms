@@ -37,11 +37,12 @@ class LeafBrowser {
     // and each bundle's children bundles
 
     // I'll want to avoid rerendering this whole thing on each update
-    bundleStore.listen((bundles) => {
+    bundleStore.listen((bundleTree) => {
       let $childrenContainer = this.$el.find('.top-bundle-children');
 
       // then recursively build the dom
-      this.renderBundlesIntoEl(bundles, $childrenContainer);
+      this.renderBundlesIntoEl(bundleTree.loadedBundles, $childrenContainer);
+      this.renderLeafsIntoEl(bundleTree.loadedLeafs, $childrenContainer);
     });
   }
 
@@ -87,18 +88,15 @@ class LeafBrowser {
         // and whatever mutations that can occur
       }
 
-      let childrenBundles = bundle.loadedBundles;
       let $children = $bundle.children('.bundle-children');
-      this.renderBundlesIntoEl(childrenBundles, $children);
-      // bundle is a fully complete store of bundles and leafs, for now
-      let childrenLeafs = _.filter(_.values(bundle.leafs), (l) => !_.isBoolean(l));
-      this.renderLeafsIntoEl(childrenLeafs, $children);
+      this.renderBundlesIntoEl(bundle.loadedBundles, $children);
+      this.renderLeafsIntoEl(bundle.loadedLeafs, $children);
     });
   }
 
   renderLeafsIntoEl(leafs, $el) {
     // First clear out old ones (because we're not rerendering)
-    $el.find('.leaf-label').remove();
+    $el.children('.leaf-label').remove();
     _.each(leafs, (leaf) => {
       let $leaf = $(`
         <div class='leaf-label'>${ leaf.name }</div>
