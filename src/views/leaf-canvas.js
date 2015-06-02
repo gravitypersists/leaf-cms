@@ -2,6 +2,7 @@ const $ = require('jquery');
 const _ = require('lodash');
 const Firebase = require('firebase');
 const Toolbar = require('./toolbar');
+const LeafBuilder = require('../../submodules/leafbuilder/src/leafbuilder');
 const actions = require('../actions');
 
 let currentLeafStore = require('../stores/current-leaf');
@@ -19,7 +20,9 @@ class LeafCanvas {
   }
 
   onNewLeaf(leaf) {
-    this.$el.find('.leafbuilder-container').html(JSON.stringify(leaf.loadedConfig));
+    if (!leaf.loadedConfig) return;
+    let $leafbuilder = this.$el.find('.leafbuilder-container');
+    new LeafBuilder($leafbuilder, leaf.loadedConfig);
   }
 
 }

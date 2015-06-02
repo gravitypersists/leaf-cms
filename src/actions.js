@@ -26,7 +26,6 @@ let actions = Reflux.createActions({
   'thenGotoLeaf': {}
 });
 
-
 let defaultConfig = {
   "content": {
     "0": {
@@ -40,6 +39,13 @@ let defaultConfig = {
               "content": "Welcome to LeafBuilder."
             }
           }
+        }
+      },
+      "layout": {
+        "type": "Document",
+        "config": {
+          "width": "auto",
+          "array": ["0"]
         }
       }
     }
