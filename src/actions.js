@@ -6,6 +6,7 @@ let ref = new Firebase('https://leafbuilder-dev.firebaseio.com');
 let bundlesRef = ref.child('bundles');
 let usersRef = ref.child('users');
 let leafsRef = ref.child('leafs');
+let leafConfigsRef = ref.child('configs');
 
 let currentUser = null;
 
@@ -21,8 +22,29 @@ let actions = Reflux.createActions({
   'addBundleToBundle': {},
   'addBundleToUser': {},
   'updateLeaf': {},
-  'gotoLeaf': {}
+  'gotoLeaf': { asyncResult: true },
+  'thenGotoLeaf': {}
 });
+
+
+let defaultConfig = {
+  "content": {
+    "0": {
+      "layerId": "0",
+      "children": {
+        "0": {
+          "elementId": 0,
+          "type": "Text",
+          "config": {
+            "text": {
+              "content": "Welcome to LeafBuilder."
+            }
+          }
+        }
+      }
+    }
+  }
+}
 
 
 // Takes authdata as firebase gives it and returns a standard object
@@ -175,9 +197,20 @@ actions.addBundleToBundle.preEmit = function(childBundle, parentBundleId) {
 actions.createLeaf.preEmit = function(leaf = {}, parentId) {
   let defaultLeaf = {
     name: '',
+    snapshots: []
   };
   _.defaults(leaf, defaultLeaf);
+  // Create snapshots, as part of leaf.
+  if (leaf.snapshots.length === 0) {
+    let newConfig = leafConfigsRef.push(defaultConfig).key();
+    leaf.snapshots.push({
+      birth: Date.now(),
+      last_touch: Date.now(),
+      config: newConfig,
+    });
+  }
   leaf.owner = currentUser.uid;
+  // parent won't be needed in the future, it's for convenience now
   leaf.parent = (parentId === 'top') ? currentUser.workspace : parentId;
   // Add it to firebase
   leaf.id = leafsRef.push(leaf).key();
@@ -188,6 +221,17 @@ actions.createLeaf.preEmit = function(leaf = {}, parentId) {
 actions.updateLeaf.preEmit = function(leaf) {
   leafsRef.child(leaf.id).set(leaf);
 }
+
+// TODO figure out how to avoid two actions here? gotoLeaf and thenGotoLeaf
+actions.gotoLeaf.listen(function(leaf) {
+  let sorted = _.sortBy(leaf.snapshots, (s) => s.last_touch);
+  leafConfigsRef.child(_.first(sorted).config).once('value', (configSnap) => {
+    leaf.loadedConfig = configSnap.val();
+    leaf.loadedConfig.id = configSnap.key();
+    actions.gotoLeaf.completed();
+    actions.thenGotoLeaf(leaf);
+  });
+});
 
 
 module.exports = actions;

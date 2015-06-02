@@ -12,8 +12,14 @@ class LeafCanvas {
     this.$el = $el;
     this.$el.html(`
       <div class='toolbar'></div>
+      <div class='leafbuilder-container'></div>
     `);
     let toolbar = new Toolbar(this.$el.find('.toolbar'));
+    currentLeafStore.listen((leaf) => this.onNewLeaf(leaf));
+  }
+
+  onNewLeaf(leaf) {
+    this.$el.find('.leafbuilder-container').html(JSON.stringify(leaf.loadedConfig));
   }
 
 }

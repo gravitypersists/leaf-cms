@@ -11,6 +11,10 @@ let currentLeafStore = Reflux.createStore({
 
   init: function() {},
 
+  thenGotoLeaf: function(leaf) {
+    this.trigger(leaf);
+  },
+
   gotoLeaf: function(leaf) {
     this.trigger(leaf);
   }
