@@ -9,7 +9,9 @@ $app.html(`
   <div class='header'></div>
   <div class='app-body'>
     <div class='leafbrowser'></div>
-    <div class='leaf-canvas'></div>
+    <div class='leaf-canvas-container'>
+      <div class='leaf-canvas'><div>
+    </div>
   </div>
 `);
 

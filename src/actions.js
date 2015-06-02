@@ -13,7 +13,6 @@ let actions = Reflux.createActions({
   'login': {},
   'completeLogin': {},
   'logout': {},
-  'createProfile': {},
   'updateProfile': {},
   'createBundle': {},
   'addBundle': {},
@@ -21,7 +20,7 @@ let actions = Reflux.createActions({
   'addLeafToBundle': {},
   'addBundleToBundle': {},
   'addBundleToUser': {},
-  'addLeaf': {},
+  'updateLeaf': {},
   'gotoLeaf': {}
 });
 
@@ -184,6 +183,10 @@ actions.createLeaf.preEmit = function(leaf = {}, parentId) {
   leaf.id = leafsRef.push(leaf).key();
   // And give it to parent bundle
   bundlesRef.child(leaf.parent + '/leafs/' + leaf.id).set(true);
+}
+
+actions.updateLeaf.preEmit = function(leaf) {
+  leafsRef.child(leaf.id).set(leaf);
 }
 
 
