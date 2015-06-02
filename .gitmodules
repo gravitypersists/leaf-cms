@@ -1,0 +1,3 @@
+[submodule "submodules/leafbuilder"]
+	path = submodules/leafbuilder
+	url = git@github.com:gravitypersists/leafbuilder.git
