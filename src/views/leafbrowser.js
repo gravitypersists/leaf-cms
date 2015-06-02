@@ -48,7 +48,7 @@ class LeafBrowser {
 
   // recursive function
   renderBundlesIntoEl(bundles, $el) {
-    _.each(bundles, (bundle) => {
+    _.each(_.sortBy(bundles, 'name'), (bundle) => {
       // Since I decided against virtual dom, I need to check for
       // existing els or decide to create a new one. Rather than
       // aim for immutability, I'm thinking about how to categorize
@@ -97,7 +97,7 @@ class LeafBrowser {
   renderLeafsIntoEl(leafs, $el) {
     // First clear out old ones (because we're not rerendering)
     $el.children('.leaf-label').remove();
-    _.each(leafs, (leaf) => {
+    _.each(_.sortBy(leafs, 'name'), (leaf) => {
       let $leaf = $(`
         <div class='leaf-label'>${ leaf.name }</div>
       `);
