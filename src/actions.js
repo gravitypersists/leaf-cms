@@ -208,7 +208,7 @@ actions.createLeaf.preEmit = function(leaf = {}, parentId) {
   _.defaults(leaf, defaultLeaf);
   // Create snapshots, as part of leaf.
   if (leaf.snapshots.length === 0) {
-    let newConfig = leafConfigsRef.push(defaultConfig).key();
+    let newConfig = leafConfigsRef.push(JSON.stringify(defaultConfig)).key();
     leaf.snapshots.push({
       birth: Date.now(),
       last_touch: Date.now(),
@@ -232,7 +232,7 @@ actions.updateLeaf.preEmit = function(leaf) {
 actions.gotoLeaf.listen(function(leaf) {
   let sorted = _.sortBy(leaf.snapshots, (s) => s.last_touch);
   leafConfigsRef.child(_.first(sorted).config).once('value', (configSnap) => {
-    leaf.loadedConfig = configSnap.val();
+    leaf.loadedConfig = JSON.parse(configSnap.val());
     leaf.loadedConfig.id = configSnap.key();
     actions.gotoLeaf.completed();
     actions.thenGotoLeaf(leaf);
