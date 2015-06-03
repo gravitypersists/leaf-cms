@@ -10,6 +10,7 @@
   "license": "ISC",
   "devDependencies": {
     "babelify": "^6.1.2",
+    "brfs": "^1.4.0",
     "browserify": "^10.2.1",
     "gulp": "^3.8.11",
     "gulp-concat": "^2.5.2",

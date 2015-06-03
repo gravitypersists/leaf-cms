@@ -10,6 +10,7 @@ var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var sass = require('gulp-sass');
 var concat = require('gulp-concat');
+var brfs = require('brfs');
  
 aws = JSON.parse(fs.readFileSync('./aws.json'));
 
@@ -39,6 +40,7 @@ gulp.task('watch', function() {
 
 var bundler = watchify(browserify('./src/main.js', watchify.args));
 bundler.transform('babelify');
+bundler.transform(brfs);
 bundler.on('update', bundle);
 gulp.task('browserify', bundle);
 
