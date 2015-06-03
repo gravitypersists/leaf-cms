@@ -13,7 +13,7 @@ class LeafCanvas {
     this.$el = $el;
     this.$el.html(`
       <div class='toolbar'></div>
-      <div class='leafbuilder-container'></div>
+      <div class='builder'></div>
     `);
     let toolbar = new Toolbar(this.$el.find('.toolbar'));
     currentLeafStore.listen((leaf) => this.onNewLeaf(leaf));
@@ -21,7 +21,7 @@ class LeafCanvas {
 
   onNewLeaf(leaf) {
     if (!leaf.loadedConfig) return;
-    let $leafbuilder = this.$el.find('.leafbuilder-container');
+    let $leafbuilder = this.$el.find('.builder');
     new LeafBuilder($leafbuilder, leaf.loadedConfig);
   }
 

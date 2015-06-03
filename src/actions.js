@@ -44,7 +44,7 @@ let defaultConfig = {
       "layout": {
         "type": "Document",
         "config": {
-          "width": "auto",
+          "width": "726px",
           "array": ["0"]
         }
       }
