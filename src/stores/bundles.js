@@ -13,35 +13,25 @@ let bundleStore = Reflux.createStore({
 
   getBundleTree: function() { return bundles; },
 
-  // searches bundle tree recursively to find our bundle
-  getBundleById: function(id = null) {
+  // searches bundle tree recursively to find our bundle or leaf
+  getResourceById: function(id = null) {
     if (bundles.id === id) return bundles;
     let recurse = function(bunds) {
-      let loaded = bunds.loadedBundles || [];
+      let loaded = (bunds.loadedBundles || []).concat(bunds.loadedLeafs || []);
       for (let i = 0; i < loaded.length; i++) {
-        let bundle = loaded[i];
-        if (bundle.id === id) return bundle;
-        let keepGoing = recurse(bundle);
+        let resource = loaded[i];
+        if (resource.id === id) return resource;
+        let keepGoing = recurse(resource);
         if (keepGoing) return keepGoing;
       }
     }
     return recurse(bundles);
   },
 
-  getBundlesByIds: function(ids) { 
-    return _.compact(_.map(ids, (__, key) => this.getBundleById(key)));
-  },
-
-  completeLogin: function(user) {
-    bundles = {}; // reset data
-  },
-
-  // deleteBundle: funct ... needed???
-
-  // getBundleById with safety to create top level bundle if it
+  // getResourceById with safety to create top level bundle if it
   // doesn't exist yet, assuming it's the workspace
   ensureBundleById: function(id) {
-    let parentBundle = this.getBundleById(id);
+    let parentBundle = this.getResourceById(id);
     if (!parentBundle) {
       bundles = { id };
       parentBundle = bundles;
@@ -58,6 +48,12 @@ let bundleStore = Reflux.createStore({
     }
   },
 
+  // ###### all methods below are ACTIONS ######
+
+  completeLogin: function(user) {
+    bundles = {}; // reset data
+  },
+
   addBundleToBundle: function(childBundle, parentBundleId) {
     let parentBundle = this.ensureBundleById(parentBundleId);
     parentBundle.loadedBundles = parentBundle.loadedBundles || [];
@@ -70,6 +66,11 @@ let bundleStore = Reflux.createStore({
     parentBundle.loadedLeafs = parentBundle.loadedLeafs || [];
     this.setOrPush(parentBundle.loadedLeafs, leaf);
     this.trigger(bundles);
+  },
+
+  gotoLeafById: function(leafId) {
+    let leaf = this.getResourceById(leafId);
+    if (leaf) actions.gotoLeaf(leaf);
   }
 
 });

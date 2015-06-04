@@ -23,6 +23,8 @@ let actions = Reflux.createActions({
   'addBundleToUser': {},
   'updateLeaf': {},
   'gotoLeaf': { asyncResult: true },
+  'gotoLeafById': {},
+  'gotoLeafWhenReady': {},
   'thenGotoLeaf': {}
 });
 

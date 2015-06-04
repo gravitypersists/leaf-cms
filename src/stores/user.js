@@ -11,9 +11,11 @@ let defaultUser = {
   name: '',
   email: '',
   avatar_url: '',
-  bundles: {}
+  bundles: {},
+  state: {
+    'current_leaf': null
+  }
 };
-
 
 let userStore = Reflux.createStore({
 
@@ -32,8 +34,16 @@ let userStore = Reflux.createStore({
 
   updateProfile: function(user) {
     this.user = user;
+    if (user.state && user.state.current_leaf) {
+      actions.gotoLeafWhenReady(user.state.current_leaf);
+    }
     this.trigger(this.user);
+  },
+
+  gotoLeaf: function(leaf) {
+    usersRef.child(this.user.uid + '/state/current_leaf').set(leaf.id);
   }
+
 });
 
 module.exports = userStore;

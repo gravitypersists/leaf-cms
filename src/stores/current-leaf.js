@@ -4,6 +4,7 @@ const actions = require('../actions');
 const Firebase = require('firebase');
 
 let currentLeaf = {};
+let showLeafWhenReadyId = null;
 
 let currentLeafStore = Reflux.createStore({
 
@@ -11,12 +12,30 @@ let currentLeafStore = Reflux.createStore({
 
   init: function() {},
 
+  gotoLeafWhenReady: function(leafId) {
+    showLeafWhenReadyId = leafId;
+    // Chances are the leaf isn't loaded yet, so this action
+    // will result in nothing. I have to listen to when a leaf
+    // is added to a bundle to 
+    actions.gotoLeafById(leafId);
+  },
+
   thenGotoLeaf: function(leaf) {
+    this.currentLeaf = leaf;
     this.trigger(leaf);
   },
 
   gotoLeaf: function(leaf) {
+    this.currentLeaf = leaf;
     this.trigger(leaf);
+  },
+
+  addLeafToBundle: function(leaf) {
+    // Somewhere we said "this is the current leaf" before it
+    // was actually downloaded
+    if (showLeafWhenReadyId === leaf.id) {
+      actions.gotoLeafById(leaf.id);
+    }
   }
 
 });
