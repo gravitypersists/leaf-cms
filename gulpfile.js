@@ -2,7 +2,6 @@ var fs = require("fs");
 var gulp = require("gulp");
 var gutil = require('gulp-util');
 var s3 = require("gulp-s3");
-var copy = require("gulp-copy");
 var watchify = require('watchify');
 var babelify = require('babelify');
 var browserify = require('browserify');
@@ -20,8 +19,12 @@ gulp.task('sync', function(){
 });
 
 gulp.task('copy', function() {
-  gulp.src(['index.html', 'assets/**', './node_modules/font-awesome/**'])
-    .pipe(copy('./build'));
+  gulp.src('index.html')
+    .pipe(gulp.dest('./build'));
+  gulp.src(['assets/**', 'submodules/leafbuilder/assets/**'])
+    .pipe(gulp.dest('./build/assets'));
+  gulp.src('./node_modules/font-awesome/**', { base: './node_modules/'})
+    .pipe(gulp.dest('./build'));
 });
 
 gulp.task('styles', function() {

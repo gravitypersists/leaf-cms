@@ -14,7 +14,6 @@
     "browserify": "^10.2.1",
     "gulp": "^3.8.11",
     "gulp-concat": "^2.5.2",
-    "gulp-copy": "0.0.2",
     "gulp-s3": "^0.3.0",
     "gulp-sass": "^2.0.1",
     "gulp-util": "^3.0.4",
