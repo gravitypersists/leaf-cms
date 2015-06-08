@@ -49,6 +49,7 @@ class Header {
       this.handleLogin(authData);
     } else {
       this.handleLogout();
+      actions.loadBlankUser();
     }
   }
 
