@@ -14,6 +14,7 @@ let actions = Reflux.createActions({
   'login': {},
   'completeLogin': {},
   'logout': {},
+  'loadBlankUser': {},
   'updateProfile': {},
   'createBundle': {},
   'addBundle': {},
@@ -302,6 +303,13 @@ actions.completeLogin.preEmit = function(user) {
   });
 
 }
+
+// TODO: Either make sure these do not actually create
+actions.loadBlankUser.listen(() => {
+  currentUser = { uid: 'fake', workspace: 'fake' };
+  actions.addBundleToBundle( { name: 'Tutorials', id: 'faketop' }, 'top');
+  actions.createLeaf({ name: 'Tutorial' }, 'faketop');
+});
 
 actions.createBundle.preEmit = function(bundle = {}, parentId) {
 
