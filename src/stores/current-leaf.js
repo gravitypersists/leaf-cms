@@ -21,12 +21,12 @@ let currentLeafStore = Reflux.createStore({
   },
 
   thenGotoLeaf: function(leaf) {
-    this.currentLeaf = leaf;
+    currentLeaf = leaf;
     this.trigger(leaf);
   },
 
   gotoLeaf: function(leaf) {
-    this.currentLeaf = leaf;
+    currentLeaf = leaf;
     this.trigger(leaf);
   },
 
