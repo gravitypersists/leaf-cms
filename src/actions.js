@@ -372,7 +372,7 @@ actions.createLeaf.preEmit = function(leaf = {}, parentId) {
 }
 
 actions.updateLeaf.preEmit = function(leaf) {
-  leafsRef.child(leaf.id).set(leaf);
+  leafsRef.child(leaf.id).set(_.omit(leaf, 'loadedConfig'));
 }
 
 // TODO figure out how to avoid two actions here? gotoLeaf and thenGotoLeaf
