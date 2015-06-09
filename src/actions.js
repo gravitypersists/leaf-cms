@@ -25,7 +25,8 @@ let actions = Reflux.createActions({
   'gotoLeaf': { asyncResult: true },
   'gotoLeafById': {},
   'gotoLeafWhenReady': {},
-  'thenGotoLeaf': {}
+  'thenGotoLeaf': {},
+  'saveLeafConfig': {}
 });
 
 let defaultConfig = require('./tutorial-configs/intro.json');
@@ -217,5 +218,9 @@ actions.gotoLeaf.listen(function(leaf) {
   });
 });
 
+actions.saveLeafConfig.listen(function(leaf, config) {
+  let configString = JSON.stringify(_.omit(config, 'id'));
+  leafConfigsRef.child(config.id).set(configString);
+})
 
 module.exports = actions;

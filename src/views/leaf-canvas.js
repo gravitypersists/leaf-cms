@@ -22,7 +22,8 @@ class LeafCanvas {
   onNewLeaf(leaf) {
     if (!leaf.loadedConfig) return;
     let $leafbuilder = this.$el.find('.builder');
-    new LeafBuilder($leafbuilder, leaf.loadedConfig);
+    let leafBuilder = new LeafBuilder($leafbuilder, leaf.loadedConfig);
+    leafBuilder.on('change', (config) => actions.saveLeafConfig(leaf, config));
   }
 
 }
