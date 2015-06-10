@@ -140,7 +140,12 @@ actions.completeLogin.preEmit = function(user) {
 actions.loadBlankUser.listen(() => {
   currentUser = { uid: 'fake', workspace: 'fake' };
   actions.addBundleToBundle( { name: 'Tutorials', id: 'faketop' }, 'top');
-  actions.createLeaf({ name: 'Tutorial' }, 'faketop');
+  let options = {
+    parentId: 'faketop',
+    quietly: true
+  }
+  actions.createLeaf({ name: 'Tutorial', id: 'fakeleaf' }, options);
+  actions.gotoLeafWhenReady('fakeleaf');
 });
 
 actions.createBundle.preEmit = function(bundle = {}, parentId) {
@@ -187,7 +192,7 @@ actions.addBundleToBundle.preEmit = function(childBundle, parentBundleId) {
 
 }
 
-actions.createLeaf.preEmit = function(leaf = {}, parentId) {
+actions.createLeaf.preEmit = function(leaf = {}, options) {
   let defaultLeaf = {
     name: '',
     snapshots: []
@@ -204,11 +209,17 @@ actions.createLeaf.preEmit = function(leaf = {}, parentId) {
   }
   leaf.owner = currentUser.uid;
   // parent won't be needed in the future, it's for convenience now
-  leaf.parent = (parentId === 'top') ? currentUser.workspace : parentId;
-  // Add it to firebase
-  leaf.id = leafsRef.push(leaf).key();
-  // And give it to parent bundle
-  bundlesRef.child(leaf.parent + '/leafs/' + leaf.id).set(true);
+  leaf.parent = (options.parentId === 'top') ?
+                  currentUser.workspace : options.parentId;
+
+  if (!options.quietly) {
+    // Add it to firebase
+    leaf.id = leafsRef.push(leaf).key();
+    // And give it to parent bundle
+    bundlesRef.child(leaf.parent + '/leafs/' + leaf.id).set(true);
+  } else {
+    actions.addLeafToBundle(leaf, options.parentId);
+  }
 }
 
 actions.updateLeaf.preEmit = function(leaf) {

@@ -122,9 +122,9 @@ class LeafBrowser {
     });
   }
 
-  promptForNewLeaf($parentBundle, parentBundleId) {
+  promptForNewLeaf($parentBundle, parentId) {
     this.promptUser($parentBundle, 'leaf', (name) => {
-      actions.createLeaf({ name }, parentBundleId);
+      actions.createLeaf({ name }, { parentId });
     });
   }
 

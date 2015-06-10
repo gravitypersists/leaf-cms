@@ -29,13 +29,13 @@ let leafStore = Reflux.createStore({
     return _.compact(_.map(ids, (__, key) => this.getLeafById(key)));
   },
 
-  createLeaf: function(leaf, parentBundleId) {
+  createLeaf: function(leaf, options = {}) {
     _.defaults(leaf, defaultLeaf);
     leaf.owner = userStore.getUser().uid;
-    leaf.parent = parentBundleId;
+    leaf.parent = options.parentId;
     leaf.id = leafsRef.push(leaf).key();
 
-    actions.addLeafToBundle(leaf, parentBundleId);
+    actions.addLeafToBundle(leaf, options.parentId);
   },
 
   addLeaf: function(leaf) {
