@@ -27,11 +27,42 @@ let actions = Reflux.createActions({
   'gotoLeafById': {},
   'gotoLeafWhenReady': {},
   'thenGotoLeaf': {},
-  'saveLeafConfig': {}
+  'saveLeafConfig': {},
+  'authWithGithub': {},
+  'authWithFacebook': {},
 });
 
 let defaultConfig = require('./tutorial-configs/intro.json');
 
+
+/*
+  AUTH
+*/
+
+ref.onAuth(function(authData){
+  if (authData) {
+    actions.login(authData);
+  } else {
+    actions.logout();
+    actions.loadBlankUser();
+  }
+}.bind(this));
+
+actions.authWithGithub.listen(() => {
+  ref.authWithOAuthRedirect("github", (error) => {
+    if (error) console.log("Login Failed!", error);
+  }, {
+    scope: 'user:email'
+  });
+});
+
+actions.authWithFacebook.listen(() => {
+  ref.authWithOAuthPopup("facebook", (error) => {
+    if (error) console.log("Login Failed!", error);
+  }, {
+    scope: 'email'
+  });
+});
 
 // Takes authdata as firebase gives it and returns a standard object
 // that is { uid, name, email, avatar_url }

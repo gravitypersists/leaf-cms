@@ -33,7 +33,6 @@ class SnapshotControl {
     let $snapshots = this.$el.find('.snapshots');
     $snapshots.empty();
     _.each(sorted, (snapshot) => {
-      console.log(snapshot);
       $snapshots.append($(`
         <li class='snapshot' data-id='${ snapshot.config }'>
           ${ moment(snapshot.last_touch).fromNow() }

@@ -18,6 +18,7 @@
     "gulp-s3": "^0.3.0",
     "gulp-sass": "^2.0.1",
     "gulp-util": "^3.0.4",
+    "reactify": "^1.1.1",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.2.1"
@@ -27,6 +28,7 @@
     "font-awesome": "^4.3.0",
     "jquery": "^2.1.4",
     "lodash": "^3.9.3",
+    "react": "^0.13.3",
     "reflux": "^0.2.7",
     "vex-js": "^2.3.2"
   }

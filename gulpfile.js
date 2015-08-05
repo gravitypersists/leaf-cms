@@ -4,6 +4,7 @@ var gutil = require('gulp-util');
 var s3 = require("gulp-s3");
 var watchify = require('watchify');
 var babelify = require('babelify');
+var babelify = require('reactify');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
@@ -50,6 +51,7 @@ gulp.task('connect', function() {
 
 var bundler = watchify(browserify('./src/main.js', watchify.args));
 bundler.transform('babelify');
+bundler.transform('reactify');
 bundler.transform(brfs);
 bundler.on('update', bundle);
 gulp.task('browserify', bundle);
