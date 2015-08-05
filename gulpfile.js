@@ -58,7 +58,10 @@ function bundle() {
   var start = new Date().getTime();
 
   var b = bundler.bundle()
-    .on('error', gutil.log.bind(gutil, 'Browserify Error'))
+    .on('error', function(err) {
+      gutil.beep();
+      gutil.log(gutil.colors.red('Browserify error:'), gutil.colors.yellow(err.toString()));
+    })
     .pipe(source('bundle.js'))
     .pipe(buffer())
     .pipe(gulp.dest('./build'))
