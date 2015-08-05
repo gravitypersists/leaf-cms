@@ -10,9 +10,9 @@ var buffer = require('vinyl-buffer');
 var sass = require('gulp-sass');
 var concat = require('gulp-concat');
 var brfs = require('brfs');
+var connect = require('gulp-connect');
  
 aws = JSON.parse(fs.readFileSync('./aws.json'));
-
 gulp.task('sync', function(){
   gulp.src('./build/**')
     .pipe(s3(aws));
@@ -40,6 +40,13 @@ gulp.task('watch', function() {
   gulp.start('copy', 'styles');
 });
 
+gulp.task('connect', function() {
+  connect.server({
+    root: 'build',
+    livereload: true
+  });
+});
+
 
 var bundler = watchify(browserify('./src/main.js', watchify.args));
 bundler.transform('babelify');
@@ -54,7 +61,8 @@ function bundle() {
     .on('error', gutil.log.bind(gutil, 'Browserify Error'))
     .pipe(source('bundle.js'))
     .pipe(buffer())
-    .pipe(gulp.dest('./build'));
+    .pipe(gulp.dest('./build'))
+    .pipe(connect.reload());
 
   var end = new Date().getTime();
   var time = end - start;
@@ -63,4 +71,4 @@ function bundle() {
   return b;
 }
 
-gulp.task('default', ['watch', 'browserify']);
+gulp.task('default', ['connect', 'watch', 'browserify']);
