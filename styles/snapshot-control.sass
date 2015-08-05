@@ -1,0 +1,56 @@
+.snapshot-control
+  position: relative
+  top: 3px
+  float: right
+  color: rgb(144, 144, 144)
+  font-size: 14px
+  margin-right: 5px
+
+  .snapshot-button
+    display: inline-block
+    background-color: #ffffff
+    width: 24px
+    border-radius: 5px
+    border-bottom: 1px solid rgb(200, 200, 200)
+    text-align: center
+    font-size: 14px
+    cursor: pointer
+
+  .snapshot-dropdown
+    display: inline-block
+    cursor: pointer
+    margin-right: 3px
+
+    .fa-history
+      font-size: 12px
+
+    .fa-caret-down
+      font-size: 10px
+      margin-left: -2px
+
+  .snapshot-dropdown-menu
+    display: none
+    background-color: white
+    position: absolute
+    top: 22px
+    width: 185px
+    right: -5px
+    z-index: 1
+    padding: 5px
+    border-left: 1px solid rgb(226, 226, 226)
+    border-bottom: 1px solid rgb(207, 207, 207)
+
+    .snapshots
+      position: relative
+      padding: 0
+      margin: 0
+
+      &:empty
+        height: 15px
+
+        &:after
+          content: "no history yet"
+          position: absolute
+          left: 60px
+          font-size: 10px
+          color: rgb(181, 181, 181)
