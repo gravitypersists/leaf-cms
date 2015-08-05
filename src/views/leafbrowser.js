@@ -14,15 +14,15 @@ class LeafBrowser {
 
   render() {
     this.$el.html(`
-      <div class='top-bundle bundle expanded'>
-        <div class='top-controls bundle-controls'>
-          <div class='add-leaf'>
-            <i class="fa fa-plus"></i>
-          </div>
-          <div class='add-bundle'>
-            <i class="fa fa-caret-square-o-right"></i>
-          </div>
+      <div class='top-controls bundle-controls'>
+        <div class='add-leaf'>
+          <i class="fa fa-plus"></i>
         </div>
+        <div class='add-bundle'>
+          <i class="fa fa-caret-square-o-right"></i>
+        </div>
+      </div>
+      <div class='top-bundle bundle expanded'>
         <div class='top-bundle-children bundle-children'></div>
       </div>
     `);
